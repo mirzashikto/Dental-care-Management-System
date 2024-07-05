@@ -51,9 +51,10 @@
 
 
             </ul>
+            {%if session['logged']==-1%}
             <div class="d-flex ">
 
-
+                
                 <button type="button" class="btn btn-outline-dark shadow-none me-lg-2 me-3" data-bs-toggle="modal" data-bs-target="#loginmodal">
                     Login
                 </button>
@@ -61,6 +62,22 @@
                     Register
                 </button>
             </div>
+            {%else %}
+            <div class="d-flex">
+
+
+                <button class="btn btn-outline-dark " >
+                    <a class="text-decoration-none text-warning" href="/logout">Log out</a>
+                </button>
+
+
+                <div class="px-3"><!-- profile button -->
+                    <a href="/"><h4><i class="bi bi-person-circle"></i></h4></a>
+                </div>
+                
+            
+            </div>
+            {%endif%}
         </div>
     </div>
 </nav>

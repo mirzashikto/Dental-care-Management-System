@@ -1,4 +1,4 @@
-from flask import Flask , render_template,redirect,request,flash,url_for
+from flask import Flask , render_template,redirect,request,flash,url_for,session
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
@@ -50,6 +50,26 @@ with app.app_context():
 def index():
     return render_template("index.html")
 
+@app.route('/login',methods=['POST'])
+def login():
+    username =request.form.get('username') 
+    password =request.form.get('password') 
+
+    user_exists=User.query.filter_by(username=username).first()
+
+    if user_exists and user_exists.password==password:
+        session['logged']=username
+        flash('Login Successful', 'Success')
+        return redirect("/")
+    else:
+        flash('Login failed. Try again', 'Success')
+        return redirect("/")
+
+@app.route('/logout',methods=['GET'])
+def logout():
+    session['logged']=-1
+    return redirect("/")
+
 @app.route("/register",methods=['POST'])
 def register():
      
@@ -66,11 +86,17 @@ def register():
     zip =request.form.get('zip') 
     dob =request.form.get('dob') 
     
-    user=User(username=username,password=password,type=type,name=name,email=email,phone=phone,house=house,street=street,area=area,country=country,zip=zip,dob=dob)
-    db.session.add(user)
-    db.session.commit()
-    flash('Registration Successful', 'Success')
-    return redirect("/")
+    already_registered=User.query.filter_by(username=username).first()
+    
+    if not already_registered:
+        user=User(username=username,password=password,type=type,name=name,email=email,phone=phone,house=house,street=street,area=area,country=country,zip=zip,dob=dob)
+        db.session.add(user)
+        db.session.commit()
+        flash('Registration Successful', 'Success')
+        return redirect("/")
+    else:
+        flash('Already Registered', 'Success')
+        return redirect("/")
 
 @app.route("/main")
 def main():
